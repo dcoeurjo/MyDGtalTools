@@ -14,6 +14,7 @@
 
 using namespace DGtal;
 using namespace Z2i;
+using namespace std;
 
 template <typename P>
 P Phi(const P & q)
@@ -22,7 +23,7 @@ P Phi(const P & q)
 }
 
 template <typename P>
-P hash(const P & ap,  int M, int R, P& h1)
+P myHash(const P & ap,  int M, int R, P& h1)
 {
 
   P res = Point(ap[0] % M, ap[1] % M);
@@ -55,7 +56,7 @@ int main(int argc, char **argv)
   ks.init( dig.getLowerBound(), dig.getUpperBound(), true );
   SurfelAdjacency<2> sAdj( true );
   Z2i::SCell bel = Surfaces<Z2i::KSpace>::findABel( ks, dig, 1000 );
-  std::vector<Z2i::Point> boundaryPoints;
+  vector<Z2i::Point> boundaryPoints;
   Surfaces<Z2i::KSpace>
     ::track2DBoundaryPoints( boundaryPoints, ks, sAdj, dig, bel );
   
@@ -102,7 +103,7 @@ int main(int argc, char **argv)
                                            Board2D::Shape::RoundCap,
                                            Board2D::Shape::RoundJoin ));
       board << *it - shiftN;
-      h = hash<Point>( (*it) - shiftN ,M,R,h1) + shiftNM;
+      h = myHash<Point>( (*it) - shiftN ,M,R,h1) + shiftNM;
       h1 += shiftNR;
       board << h;
       board << h1 ;

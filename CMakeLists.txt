@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Project definition
 # -----------------------------------------------------------------------------
-PROJECT(DGtalTools)
+PROJECT(MyDGtalTools)
 
 cmake_minimum_required (VERSION 2.6)
 
@@ -54,7 +54,9 @@ SET(DGTAL_TOOLS_SRC
   drawChamfer
   doublelattice
   volFillExterior
-)
+  echantillon
+  testobjexport
+  testDECSurface)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})

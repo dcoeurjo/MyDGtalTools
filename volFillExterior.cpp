@@ -136,15 +136,6 @@ int main(int argc, char**argv)
     }
   trace.endBlock();
 
-
-
-
-  trace.beginBlock("Saving");
-  VolWriter< MyImageC>::exportVol("epaiss.vol", imageC);
-  trace.endBlock();
-
-
-
   std::stack<Z3i::Point> pstack;
   pstack.push(*(imageC.domain().begin()));
   trace.beginBlock("filling");
