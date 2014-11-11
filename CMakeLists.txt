@@ -54,6 +54,7 @@ SET(DGTAL_TOOLS_SRC
   drawChamfer
   doublelattice
   volFillExterior
+  testRandomWalk
 )
 
 
