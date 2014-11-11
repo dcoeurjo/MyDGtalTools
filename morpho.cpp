@@ -126,5 +126,5 @@ int main(int argc, char**argv)
   PGMWriter<Image>::exportPGM("laplacian_m.pgm",imagebis);
   
   
-  return 0;
+	return 0;
 }

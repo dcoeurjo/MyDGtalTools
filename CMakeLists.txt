@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Project definition
 # -----------------------------------------------------------------------------
-PROJECT(DGtalTools)
+PROJECT(MyDGtalTools)
 
 cmake_minimum_required (VERSION 2.6)
 
@@ -55,7 +55,9 @@ SET(DGTAL_TOOLS_SRC
   doublelattice
   volFillExterior
   testRandomWalk
-)
+  echantillon
+  testobjexport
+  testDECSurface)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
