@@ -101,12 +101,18 @@ int main(int argc, char**argv)
   trace.endBlock();
 
   trace.beginBlock("Dilating..");
-  MyImageC  imageC(imageL.domain());
+  Z3i::Point d(1,1,1);
+  
+  MyImageC  imageC(Z3i::Domain(imageL.domain().lowerBound() -d ,
+                               imageL.domain().upperBound() +d));
 
-  for(MyImageC::Range::Iterator it = imageL.range().begin(),itC = imageC.range().begin(),
-        itend = imageL.range().end(); it != itend; ++it, ++itC)
-    *itC = *it;
+  //Copy
+  for(MyImageC::Domain::ConstIterator it=imageL.domain().begin(),itend=imageL.domain().end();
+      it != itend; ++it)
+    imageC.setValue(*it, imageL(*it));
+  
 
+  //Dilating
   for(MyImageC::Domain::ConstIterator it = imageC.domain().begin(),
         itend = imageC.domain().end(); it != itend; ++it)
     {
