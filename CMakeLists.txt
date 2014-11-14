@@ -57,6 +57,7 @@ SET(DGTAL_TOOLS_SRC
   testRandomWalk
   echantillon
   testobjexport
+  bary
   testDECSurface)
 
 
