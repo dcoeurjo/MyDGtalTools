@@ -135,7 +135,7 @@ int testShape(int argc, char **argv)
   
   //Setting a dirac on a 0-cell ==> 0-form
   DEC::DualForm1 dirac(calculus);
-  dirac.myContainer( 20000 )   = 1;
+  dirac.myContainer( 50 )   = 1;
   
   //Laplace operator
   DEC::DualDerivative1 dp1 = calculus.derivative<1,DUAL>();
