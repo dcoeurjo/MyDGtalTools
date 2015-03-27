@@ -57,7 +57,9 @@ SET(DGTAL_TOOLS_SRC
   testRandomWalk
   echantillon
   testobjexport
-  testDECSurface)
+  testHDF5
+  testDECSurface
+  testK)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
