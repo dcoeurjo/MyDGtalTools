@@ -55,6 +55,15 @@ void missingParam ( std::string param )
   exit ( 1 );
 }
 
+template <typename Word>
+static
+std::ostream& write_word( std::ostream& outs, Word value )
+{
+  for (unsigned size = sizeof( Word ); size; --size, value >>= 8)
+    outs.put( static_cast <char> (value & 0xFF) );
+  return outs;
+}
+
 
 int main(int argc, char**argv)
 {
@@ -97,7 +106,7 @@ int main(int argc, char**argv)
 
   trace.beginBlock("Exporting...");
   ofstream myfile;
-  myfile.open (outputFileName, ios::out | ios::app | ios::binary);
+  myfile.open (outputFileName, ios::out | ios::binary);
   
   Point size= imageL.domain().upperBound() - imageL.domain().lowerBound();
   DGtal::uint32_t cpt=0;
@@ -108,20 +117,26 @@ int main(int argc, char**argv)
   
   
   myfile <<'V'<<'O'<<'X'<<' ';
-  DGtal::uint32_t version=150;
-  myfile << version;
-  myfile <<'M'<<'A'<<'I'<<'N'<<DGtal::uint32_t(0);
-  myfile <<'S'<<'I'<<'Z'<<'E'<<DGtal::uint32_t(size[0])<<DGtal::uint32_t(size[1])
-         <<  DGtal::uint32_t(size[2]);
+  myfile.put(0x96);
+  myfile.put(0x00);
+  myfile.put( 0x00);
+  myfile.put(0x00);
+  myfile <<'M'<<'A'<<'I'<<'N';
+  write_word(myfile,DGtal::uint32_t(0));
+  myfile <<'S'<<'I'<<'Z'<<'E';
+  write_word(myfile,DGtal::uint32_t(size[0]));
+  write_word(myfile,DGtal::uint32_t(size[1]));
+  write_word(myfile,DGtal::uint32_t(size[2]));
   myfile << 'X'<<'Y'<<'Z'<<'I';
-  myfile << cpt;
+  write_word(myfile, cpt);
   for(auto it = imageL.domain().begin(), itend = imageL.domain().end();
       it!=itend; ++it)
     if (imageL(*it) != 0)
     {
       Point p = (*it) - imageL.domain().upperBound();
-      myfile << (DGtal::uint8_t)(p)[0]<< (DGtal::uint8_t)(p)[1]
-             << (DGtal::uint8_t)(p)[2] << imageL(*it);
+      myfile.put((DGtal::uint8_t)(p)[0]);
+      myfile.put( (DGtal::uint8_t)(p)[1]);
+      myfile.put( (DGtal::uint8_t)(p)[2]);
     }
   
   
