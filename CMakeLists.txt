@@ -53,6 +53,7 @@ SET(DGTAL_TOOLS_SRC
   unimodular
   drawChamfer
   doublelattice
+  vol2vox
   volFillExterior
   testRandomWalk
   echantillon
