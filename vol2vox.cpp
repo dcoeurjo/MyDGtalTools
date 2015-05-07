@@ -119,8 +119,9 @@ int main(int argc, char**argv)
       it!=itend; ++it)
     if (imageL(*it) != 0)
     {
-      myfile << (DGtal::uint8_t)(*it)[0]<< (DGtal::uint8_t)(*it)[1]
-             << (DGtal::uint8_t)(*it)[2] << imageL(*it);
+      Point p = (*it) - imageL.domain().upperBound();
+      myfile << (DGtal::uint8_t)(p)[0]<< (DGtal::uint8_t)(p)[1]
+             << (DGtal::uint8_t)(p)[2] << imageL(*it);
     }
   
   
