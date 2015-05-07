@@ -56,9 +56,9 @@ SET(DGTAL_TOOLS_SRC
   vol2vox
   volFillExterior
   testRandomWalk
-  echantillon
-  testobjexport
-  testHDF5
+#  echantillon
+#  testobjexport
+#  testHDF5
   testDECSurface
   testK)
 
