@@ -101,38 +101,30 @@ int main(int argc, char**argv)
   trace.endBlock();
 
   trace.beginBlock("Dilating..");
-  MyImageC  imageC(imageL.domain());
+  Z3i::Point d(1,1,1);
+  
+  MyImageC  imageC(Z3i::Domain(imageL.domain().lowerBound() -d ,
+                               imageL.domain().upperBound() +d));
 
-  for(MyImageC::Range::Iterator it = imageL.range().begin(),itC = imageC.range().begin(),
-        itend = imageL.range().end(); it != itend; ++it, ++itC)
-    *itC = *it;
+  trace.info()<< "Input: "<<imageL<< std::endl;
+  trace.info()<< "Output: "<<imageC<< std::endl;
 
-  for(MyImageC::Domain::ConstIterator it = imageC.domain().begin(),
-        itend = imageC.domain().end(); it != itend; ++it)
+   //Dilating by 1 voxel
+  for(MyImageC::Domain::ConstIterator it = imageL.domain().begin(),
+        itend = imageL.domain().end(); it != itend; ++it)
     {
-      unsigned char val = imageC(*it);
+      unsigned char val = imageL(*it);
 
-      if (val ==0)
-        {
-
-          if ((imageC.domain().isInside(*it - px)))
-            val = val + imageL(*it - px);
-          if ((imageC.domain().isInside(*it + px)))
-            val = val + imageL(*it + px);
-
-          if ((imageC.domain().isInside(*it - py)))
-            val = val + imageL(*it - py);
-          if ((imageC.domain().isInside(*it + py)))
-            val = val + imageL(*it + py);
-
-          if ((imageC.domain().isInside(*it - pz)))
-            val = val + imageL(*it - pz);
-          if ((imageC.domain().isInside(*it + pz)))
-            val = val + imageL(*it + pz);
-
-          if (val >1)
-            imageC.setValue(*it, 1);
-        }
+      if (val != 0)
+      {
+        imageC.setValue(*it, 1);
+        imageC.setValue(*it+px, 1);
+        imageC.setValue(*it-px, 1);
+        imageC.setValue(*it+pz, 1);
+        imageC.setValue(*it-pz, 1);
+        imageC.setValue(*it+py, 1);
+        imageC.setValue(*it-py, 1);
+      }
     }
   trace.endBlock();
 
