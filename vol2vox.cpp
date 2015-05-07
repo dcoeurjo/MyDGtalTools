@@ -108,9 +108,16 @@ int main(int argc, char**argv)
   ofstream myfile;
   myfile.open (outputFileName, ios::out | ios::binary);
   
-  Point size= imageL.domain().upperBound() - imageL.domain().lowerBound();
+  Domain dom(Point(0,0,0),Point(2,2,2));
+  MyImageC img(dom);
+  
+  Point size= img.domain().upperBound() - img.domain().lowerBound();
+  for(auto it = img.range().begin(), itend = img.range().end();
+      it!=itend; ++it)
+    *it = 1;
+  
   DGtal::uint32_t cpt=0;
-  for(auto it = imageL.range().begin(), itend = imageL.range().end();
+  for(auto it = img.range().begin(), itend = img.range().end();
       it!=itend; ++it)
     if (*it != 0)
       cpt++;
@@ -122,25 +129,27 @@ int main(int argc, char**argv)
   //chunkid ?
   write_word(myfile,DGtal::uint32_t(0));
   write_word(myfile,DGtal::uint32_t(4+4+4+cpt));
-  
+  trace.info()<<size<<std::endl;
   myfile <<'S'<<'I'<<'Z'<<'E';
+  write_word(myfile,DGtal::uint32_t(12)); //WTF
+  write_word(myfile,DGtal::uint32_t(0)); //WTF
   write_word(myfile,DGtal::uint32_t(size[0]+1));
   write_word(myfile,DGtal::uint32_t(size[1]+1));
   write_word(myfile,DGtal::uint32_t(size[2]+1));
   myfile << 'X'<<'Y'<<'Z'<<'I';
   write_word(myfile, cpt);
   
-  for(auto it = imageL.domain().begin(), itend = imageL.domain().end();
+  for(auto it = img.domain().begin(), itend = img.domain().end();
       it!=itend; ++it)
-    if (imageL(*it) != 0)
+    if (img(*it) != 0)
     {
-      Point p = (*it) - imageL.domain().upperBound();
+      Point p = (*it) - imageL.domain().lowerBound();
       myfile.put((DGtal::uint8_t)(p)[0]);
       myfile.put( (DGtal::uint8_t)(p)[1]);
       myfile.put( (DGtal::uint8_t)(p)[2]);
     }
   
-  
+  myfile.close();
   trace.endBlock();
   
   return 0;
