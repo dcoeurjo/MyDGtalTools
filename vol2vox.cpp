@@ -117,18 +117,19 @@ int main(int argc, char**argv)
   
   
   myfile <<'V'<<'O'<<'X'<<' ';
-  myfile.put(0x96);
-  myfile.put(0x00);
-  myfile.put( 0x00);
-  myfile.put(0x00);
+  write_word(myfile, (DGtal::uint32_t)150);
   myfile <<'M'<<'A'<<'I'<<'N';
+  //chunkid ?
   write_word(myfile,DGtal::uint32_t(0));
+  write_word(myfile,DGtal::uint32_t(4+4+4+cpt));
+  
   myfile <<'S'<<'I'<<'Z'<<'E';
-  write_word(myfile,DGtal::uint32_t(size[0]));
-  write_word(myfile,DGtal::uint32_t(size[1]));
-  write_word(myfile,DGtal::uint32_t(size[2]));
+  write_word(myfile,DGtal::uint32_t(size[0]+1));
+  write_word(myfile,DGtal::uint32_t(size[1]+1));
+  write_word(myfile,DGtal::uint32_t(size[2]+1));
   myfile << 'X'<<'Y'<<'Z'<<'I';
   write_word(myfile, cpt);
+  
   for(auto it = imageL.domain().begin(), itend = imageL.domain().end();
       it!=itend; ++it)
     if (imageL(*it) != 0)
