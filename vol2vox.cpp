@@ -108,45 +108,72 @@ int main(int argc, char**argv)
   ofstream myfile;
   myfile.open (outputFileName, ios::out | ios::binary);
   
-  Domain dom(Point(0,0,0),Point(2,2,2));
-  MyImageC img(dom);
-  
-  Point size= img.domain().upperBound() - img.domain().lowerBound();
-  for(auto it = img.range().begin(), itend = img.range().end();
-      it!=itend; ++it)
-    *it = 1;
-  
   DGtal::uint32_t cpt=0;
-  for(auto it = img.range().begin(), itend = img.range().end();
+  for(auto it = imageL.range().begin(), itend = imageL.range().end();
       it!=itend; ++it)
     if (*it != 0)
       cpt++;
   
+  Point size = imageL.domain().upperBound() - imageL.domain().lowerBound();
   
-  myfile <<'V'<<'O'<<'X'<<' ';
-  write_word(myfile, (DGtal::uint32_t)150);
-  myfile <<'M'<<'A'<<'I'<<'N';
-  //chunkid ?
-  write_word(myfile,DGtal::uint32_t(0));
-  write_word(myfile,DGtal::uint32_t(4+4+4+cpt));
+  /*
+   4b VOX' '
+   4b version (150)
+   
+   4b MAIN (chunckid)
+   4b size chucnk content (n)
+   4b size chunck children (m)
+   
+   4b SIZE (chunckid)
+   4b chunck content
+   4b chunck children
+   4bx3  x,y,z
+   
+   4b VOXEL (chunckid)
+   4b chunck content
+   4b chunck children
+   4b number of voxels
+   1b x 4 (x,y,z,idcol)  x numVoxels
+   
+   */
+  
   trace.info()<<size<<std::endl;
+  
+  //HEADER
+  myfile <<'V'<<'O'<<'X'<<' ';
+  //  version 150
+  write_word(myfile, (DGtal::uint32_t)150);
+  
+  //Chunck MAIN
+  myfile <<'M'<<'A'<<'I'<<'N';
+  write_word(myfile,DGtal::uint32_t(0)); //size content
+  write_word(myfile,DGtal::uint32_t( (4+4+4 + 12 ) + ((4+ 4 + 4) + (4+ cpt*4)))); //size children
+  
+  //Chunck SIZE
   myfile <<'S'<<'I'<<'Z'<<'E';
-  write_word(myfile,DGtal::uint32_t(12)); //WTF
-  write_word(myfile,DGtal::uint32_t(0)); //WTF
+  write_word(myfile,DGtal::uint32_t(12)); //3x4
+  write_word(myfile,DGtal::uint32_t(0));  //0 children
   write_word(myfile,DGtal::uint32_t(size[0]+1));
   write_word(myfile,DGtal::uint32_t(size[1]+1));
   write_word(myfile,DGtal::uint32_t(size[2]+1));
-  myfile << 'X'<<'Y'<<'Z'<<'I';
-  write_word(myfile, cpt);
   
-  for(auto it = img.domain().begin(), itend = img.domain().end();
+  //Chunck VOXEL
+  myfile << 'X'<<'Y'<<'Z'<<'I';
+  write_word(myfile, (DGtal::uint32_t)(4+cpt*4));  // 4 + numvoxel * 4
+  write_word(myfile,DGtal::uint32_t(0));  //0 children
+  write_word(myfile, DGtal::uint32_t(cpt)); //numvoxels
+  
+  trace.info() << "Number of voxels= "<<cpt<<std::endl;
+  
+  for(auto it = imageL.domain().begin(), itend = imageL.domain().end();
       it!=itend; ++it)
-    if (img(*it) != 0)
+    if (imageL(*it) != 0)
     {
       Point p = (*it) - imageL.domain().lowerBound();
-      myfile.put((DGtal::uint8_t)(p)[0]);
-      myfile.put( (DGtal::uint8_t)(p)[1]);
-      myfile.put( (DGtal::uint8_t)(p)[2]);
+      myfile.put((DGtal::uint8_t)p[0]);
+      myfile.put( (DGtal::uint8_t)p[1]);
+      myfile.put( (DGtal::uint8_t)p[2]);
+      myfile.put(imageL(*it));
     }
   
   myfile.close();
