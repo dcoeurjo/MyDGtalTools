@@ -7,7 +7,7 @@ PROJECT(MyDGtalTools)
 cmake_minimum_required (VERSION 2.6)
 
 
-FIND_PACKAGE(DGtal 0.5 REQUIRED)
+FIND_PACKAGE(DGtal 0.7 REQUIRED)
 INCLUDE_DIRECTORIES(${DGTAL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${DGTAL_LIBRARY_DIRS})
 
@@ -53,13 +53,17 @@ SET(DGTAL_TOOLS_SRC
   unimodular
   drawChamfer
   doublelattice
+  vol2vox
   volFillExterior
   testRandomWalk
 #  echantillon
   mipmapdisk
 #  testobjexport
 #  testDECSurface
-)
+#  testHDF5
+  testDECSurface
+  testK
+  )
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})

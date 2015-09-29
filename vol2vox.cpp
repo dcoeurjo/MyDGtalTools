@@ -28,7 +28,6 @@
 #include <iostream>
 #include <DGtal/base/Common.h>
 #include <DGtal/io/readers/VolReader.h>
-#include <DGtal/io/writers/VolWriter.h>
 #include <DGtal/helpers/StdDefs.h>
 #include <DGtal/images/Image.h>
 #include <DGtal/images/ImageContainerBySTLVector.h>
@@ -54,6 +53,15 @@ void missingParam ( std::string param )
   trace.error() <<" Parameter: "<<param<<" is required..";
   trace.info() <<std::endl;
   exit ( 1 );
+}
+
+template <typename Word>
+static
+std::ostream& write_word( std::ostream& outs, Word value )
+{
+  for (unsigned size = sizeof( Word ); size; --size, value >>= 8)
+    outs.put( static_cast <char> (value & 0xFF) );
+  return outs;
 }
 
 
@@ -92,91 +100,84 @@ int main(int argc, char**argv)
 
   typedef ImageContainerBySTLVector<Z3i::Domain, unsigned char>  MyImageC;
 
-  Z3i::Point px(1,0,0);
-  Z3i::Point py(0,1,0);
-  Z3i::Point pz(0,0,1);
-
   trace.beginBlock("Loading..");
   MyImageC  imageL = VolReader< MyImageC >::importVol ( filename );
   trace.endBlock();
 
-  trace.beginBlock("Dilating..");
-  Z3i::Point d(1,1,1);
+  trace.beginBlock("Exporting...");
+  ofstream myfile;
+  myfile.open (outputFileName, ios::out | ios::binary);
   
-  MyImageC  imageC(Z3i::Domain(imageL.domain().lowerBound() -d ,
-                               imageL.domain().upperBound() +d));
-
-  trace.info()<< "Input: "<<imageL<< std::endl;
-  trace.info()<< "Output: "<<imageC<< std::endl;
-
-   //Dilating by 1 voxel
-  for(MyImageC::Domain::ConstIterator it = imageL.domain().begin(),
-        itend = imageL.domain().end(); it != itend; ++it)
+  DGtal::uint32_t cpt=0;
+  for(auto it = imageL.range().begin(), itend = imageL.range().end();
+      it!=itend; ++it)
+    if (*it != 0)
+      cpt++;
+  
+  Point size = imageL.domain().upperBound() - imageL.domain().lowerBound();
+  
+  /*
+   4b VOX' '
+   4b version (150)
+   
+   4b MAIN (chunckid)
+   4b size chucnk content (n)
+   4b size chunck children (m)
+   
+   4b SIZE (chunckid)
+   4b chunck content
+   4b chunck children
+   4bx3  x,y,z
+   
+   4b VOXEL (chunckid)
+   4b chunck content
+   4b chunck children
+   4b number of voxels
+   1b x 4 (x,y,z,idcol)  x numVoxels
+   
+   */
+  
+  trace.info()<<size<<std::endl;
+  
+  //HEADER
+  myfile <<'V'<<'O'<<'X'<<' ';
+  //  version 150
+  write_word(myfile, (DGtal::uint32_t)150);
+  
+  //Chunck MAIN
+  myfile <<'M'<<'A'<<'I'<<'N';
+  write_word(myfile,DGtal::uint32_t(0)); //size content
+  write_word(myfile,DGtal::uint32_t( (4+4+4 + 12 ) + ((4+ 4 + 4) + (4+ cpt*4)))); //size children
+  
+  //Chunck SIZE
+  myfile <<'S'<<'I'<<'Z'<<'E';
+  write_word(myfile,DGtal::uint32_t(12)); //3x4
+  write_word(myfile,DGtal::uint32_t(0));  //0 children
+  write_word(myfile,DGtal::uint32_t(size[0]+1));
+  write_word(myfile,DGtal::uint32_t(size[1]+1));
+  write_word(myfile,DGtal::uint32_t(size[2]+1));
+  
+  //Chunck VOXEL
+  myfile << 'X'<<'Y'<<'Z'<<'I';
+  write_word(myfile, (DGtal::uint32_t)(4+cpt*4));  // 4 + numvoxel * 4
+  write_word(myfile,DGtal::uint32_t(0));  //0 children
+  write_word(myfile, DGtal::uint32_t(cpt)); //numvoxels
+  
+  trace.info() << "Number of voxels= "<<cpt<<std::endl;
+  
+  for(auto it = imageL.domain().begin(), itend = imageL.domain().end();
+      it!=itend; ++it)
+    if (imageL(*it) != 0)
     {
-      unsigned char val = imageL(*it);
-
-      if (val != 0)
-      {
-        imageC.setValue(*it, 1);
-        imageC.setValue(*it+px, 1);
-        imageC.setValue(*it-px, 1);
-        imageC.setValue(*it+pz, 1);
-        imageC.setValue(*it-pz, 1);
-        imageC.setValue(*it+py, 1);
-        imageC.setValue(*it-py, 1);
-      }
+      Point p = (*it) - imageL.domain().lowerBound();
+      myfile.put((DGtal::uint8_t)p[0]);
+      myfile.put( (DGtal::uint8_t)p[1]);
+      myfile.put( (DGtal::uint8_t)p[2]);
+      myfile.put(imageL(*it));
     }
+  
+  myfile.close();
   trace.endBlock();
-
-  std::stack<Z3i::Point> pstack;
-  pstack.push(*(imageC.domain().begin()));
-  trace.beginBlock("filling");
-  while (!pstack.empty())
-    {
-      Z3i::Point p= pstack.top();
-      pstack.pop();
-      imageC.setValue(p, 113);
-
-      if ((imageC.domain().isInside(p - px)) &&
-          (imageC( p - px) == 0))
-        pstack.push( p -px);
-
-      if ((imageC.domain().isInside(p - py)) &&
-          (imageC( p - py) == 0))
-        pstack.push( p -py);
-
-      if ((imageC.domain().isInside(p - pz)) &&
-          (imageC( p - pz) == 0))
-        pstack.push( p -pz);
-
-      if ((imageC.domain().isInside(p + px)) &&
-          (imageC( p + px) == 0))
-        pstack.push( p +px);
-
-      if ((imageC.domain().isInside(p + py)) &&
-          (imageC( p + py) == 0))
-        pstack.push( p +py);
-
-      if ((imageC.domain().isInside(p + pz)) &&
-          (imageC( p + pz) == 0))
-        pstack.push( p +pz);
-
-    }
-  trace.endBlock();
-
-  trace.beginBlock("Complement");
-   //Fastcopy
-  for(MyImageC::Range::Iterator it = imageC.range().begin(),
-        itend = imageC.range().end(); it != itend; ++it)
-    if (*it == 113 )
-      *it = 0;
-    else
-      *it = 128;
-  trace.endBlock();
-
-  trace.beginBlock("Saving");
-  bool res =  VolWriter< MyImageC>::exportVol(outputFileName, imageC);
-  trace.endBlock();
-
-  if (res) return 0; else return 1;
+  
+  return 0;
 }
