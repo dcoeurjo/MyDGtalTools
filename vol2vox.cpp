@@ -165,6 +165,7 @@ int main(int argc, char**argv)
   
   trace.info() << "Number of voxels= "<<cpt<<std::endl;
   
+  //Data
   for(auto it = imageL.domain().begin(), itend = imageL.domain().end();
       it!=itend; ++it)
     if (imageL(*it) != 0)
