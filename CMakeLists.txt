@@ -55,9 +55,11 @@ SET(DGTAL_TOOLS_SRC
   doublelattice
   volFillExterior
   testRandomWalk
-  echantillon
-  testobjexport
-  testDECSurface)
+#  echantillon
+  mipmapdisk
+#  testobjexport
+#  testDECSurface
+)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
