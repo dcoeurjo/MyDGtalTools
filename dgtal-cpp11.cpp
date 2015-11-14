@@ -46,6 +46,17 @@ int main()
   trace.info() <<std::endl;
   trace.endBlock();
   
+  trace.beginBlock("Lambda exps");
+  
+  std::for_each(image.range().begin(), image.range().end(), [](int a){ trace.info() <<a<<" "; });
+  trace.info()<<std::endl;
+  
+  std::transform(image.range().begin(), image.range().end(), image.range().begin(), [](int a){return 2*a+1;});
+  
+  std::for_each(image.range().begin(), image.range().end(), [](int a){ trace.info() <<a<<" "; });  
+  trace.info() <<std::endl;
+  trace.endBlock();
+  
   
   return 0;
 }
