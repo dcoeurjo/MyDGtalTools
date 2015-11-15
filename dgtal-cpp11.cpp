@@ -2,6 +2,8 @@
 #include <DGtal/base/Common.h>
 #include <DGtal/helpers/StdDefs.h>
 #include <DGtal/images/ImageContainerBySTLVector.h>
+#include <DGtal/io/boards/Board2D.h>
+#include <vector>
 
 using namespace DGtal;
 using namespace Z2i;
@@ -53,10 +55,41 @@ int main()
   
   std::transform(image.range().begin(), image.range().end(), image.range().begin(), [](int a){return 2*a+1;});
   
-  std::for_each(image.range().begin(), image.range().end(), [](int a){ trace.info() <<a<<" "; });  
+  std::for_each(image.range().begin(), image.range().end(), [](int a){ trace.info() <<a<<" "; });
   trace.info() <<std::endl;
   trace.endBlock();
   
-  
+
+  trace.beginBlock("STL+Lambda homotopic thinning");
+  Domain domain2( Point(-32,-32), Point(32,32));
+  DigitalSet set(domain2);
+  std::for_each(domain2.begin(), domain2.end(), [&set](Point p){ if ((p.norm() < 10 ) && p.norm() > 5) set.insertNew(p); });
+ 
+  trace.info() << set << std::endl;
+  Board2D board;
+  board << set;
+  board.saveEPS("original.eps");
+
+  Object4_8 object(dt4_8 , set);
+  std::vector<Point> Q;
+  auto stable = false;
+  auto step = 0;
+  DigitalSet & S = object.pointSet();
+  while(!stable)
+  {
+    trace.info() << "step = "<<step;
+    stable = true;
+    std::for_each(S.begin(), S.end(),
+                  [&Q,&object](Point p){ if (object.isSimple(p)) Q.push_back(p); });
+    std::for_each(Q.begin(), Q.end(),
+                  [&object,&stable,&S](Point p){ if (object.isSimple(p))  {stable = false; S.erase(p);} });
+    Q.clear();
+    trace.info() << "|S| = "<< S.size() << std::endl;
+    step++;
+  }
+  trace.endBlock();
+  board << CustomStyle( object.pointSet().className(), new CustomColors(Color::Black, Color::Red))
+        << object.pointSet();
+  board.saveEPS("skeleton.eps");
   return 0;
 }
