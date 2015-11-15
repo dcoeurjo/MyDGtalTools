@@ -12,18 +12,21 @@ int main()
 {
   Domain domain(Point(0,0), Point(2,2));
   
+  //Testing auto in domain iteration
   trace.beginBlock("Domain iterator with auto");
   for(auto it = domain.begin(), itend=domain.end(); it != itend; ++it)
     trace.info()<< *it << " ";
   trace.info()<<std::endl;
   trace.endBlock();
   
+  //For loop on a range
   trace.beginBlock("range-based for on the domain");
   for(auto point : domain)
     trace.info() <<point << " ";
   trace.info() <<std::endl;
   trace.endBlock();
   
+  //For loop on an image range
   trace.beginBlock("image (const) iterator on values");
   ImageContainerBySTLVector<Domain, int> image(domain);
   for(auto value: image.range())
@@ -31,12 +34,14 @@ int main()
   trace.info() <<std::endl;
   trace.endBlock();
   
+  //For loop on an image domain range
   trace.beginBlock("(const) iterator on image domain");
   for(auto value: image.domain())
     trace.info() <<value << " ";
   trace.info() <<std::endl;
   trace.endBlock();
   
+  //R-W for loop on an image range
   trace.beginBlock("image  iterator on values");
   int cpt=0;
   for(auto& value: image.range())
@@ -48,23 +53,21 @@ int main()
   trace.info() <<std::endl;
   trace.endBlock();
   
+  //Testing lambda expressions
   trace.beginBlock("Lambda exps");
-  
   std::for_each(image.range().begin(), image.range().end(), [](int a){ trace.info() <<a<<" "; });
   trace.info()<<std::endl;
-  
   std::transform(image.range().begin(), image.range().end(), image.range().begin(), [](int a){return 2*a+1;});
-  
   std::for_each(image.range().begin(), image.range().end(), [](int a){ trace.info() <<a<<" "; });
   trace.info() <<std::endl;
   trace.endBlock();
   
-
+  //Lambda expression based ultimate homotopic thining
   trace.beginBlock("STL+Lambda homotopic thinning");
   Domain domain2( Point(-32,-32), Point(32,32));
   DigitalSet set(domain2);
+  //constructing a torus
   std::for_each(domain2.begin(), domain2.end(), [&set](Point p){ if ((p.norm() < 10 ) && p.norm() > 5) set.insertNew(p); });
- 
   trace.info() << set << std::endl;
   Board2D board;
   board << set;
