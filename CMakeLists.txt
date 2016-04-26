@@ -46,6 +46,7 @@ IF(VERBOSE)
 ENDIF(VERBOSE)
 
 SET(DGTAL_TOOLS_SRC
+  BNG
   perfectHashing
   areaMonteCarlo
   morpho
