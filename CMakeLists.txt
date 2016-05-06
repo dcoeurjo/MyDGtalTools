@@ -49,6 +49,7 @@ SET(DGTAL_TOOLS_SRC
   perfectHashing
   areaMonteCarlo
   morpho
+  BNG
   testChamfer
   unimodular
   drawChamfer
