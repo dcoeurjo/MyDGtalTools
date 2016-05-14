@@ -57,6 +57,7 @@ SET(DGTAL_TOOLS_SRC
   vol2vox
   volFillExterior
   testRandomWalk
+  fourier2disks
   rawGen
 #  echantillon
   mipmapdisk
