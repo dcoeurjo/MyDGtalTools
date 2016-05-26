@@ -66,7 +66,8 @@ SET(DGTAL_TOOLS_SRC
 #  testHDF5
   testDECSurface
   testK
-  dgtal-cpp11  )
+  dgtal-cpp11
+  figChen)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
