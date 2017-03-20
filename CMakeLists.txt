@@ -51,11 +51,13 @@ SET(DGTAL_TOOLS_SRC
   morpho
   BNG
   testChamfer
+ pts2balls
   unimodular
   drawChamfer
   doublelattice
   vol2vox
-  volFillExterior
+  genMultiSurface  
+volFillExterior
   testRandomWalk
   fourier2disks
   rawGen
