@@ -57,6 +57,7 @@ SET(DGTAL_TOOLS_SRC
   doublelattice
   vol2vox
   genMultiSurface  
+genMultiSurfaceT
 volFillExterior
   testRandomWalk
   fourier2disks
