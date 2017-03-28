@@ -8,109 +8,87 @@
 #include <DGtal/topology/LightImplicitDigitalSurface.h>
 #include <DGtal/topology/DigitalSurface.h>
 
+
+#include <DGtal/io/viewers/Viewer3D.h>
+
 using namespace DGtal;
 using namespace Z3i;
 
-int main()
+int main(int argc, char ** argv)
 {
-  const double h = 1;
-  const double radiusBall = 12.0;
+ 
+  QApplication app(argc,argv);
   
-  trace.beginBlock( "Make parametric shape..." );
-  
-  typedef Ball3D< Z3i::Space > Shape;
-  
-  RealPoint center( 0.0, 0.0, 0.0 );
-  Shape ball( center, radiusBall );
-  RealPoint centerBis(18.0,0.0,0.0);
-  Shape ballBis( centerBis, radiusBall);
-  trace.endBlock();
-  
-  trace.beginBlock( "Make digital shape..." );
-  typedef GaussDigitizer< Z3i::Space, Shape > DigitalShape;
-  typedef DigitalShape::Domain Domain;
-  
-  DigitalShape digitalBall;
-  digitalBall.attach( ball );
-  digitalBall.init( ball.getLowerBound() - Z3i::RealPoint( 1.0, 1.0, 1.0 ),
-                   ball.getUpperBound() + Z3i::RealPoint( 1.0, 1.0, 1.0 ),
-                   h );
-  DigitalShape digitalBallBis;
-  digitalBallBis.attach( ballBis );
-  digitalBallBis.init( ballBis.getLowerBound() - Z3i::RealPoint( 1.0, 1.0, 1.0 ),
-                      ballBis.getUpperBound() + Z3i::RealPoint( 1.0, 1.0, 1.0 ),
-                      h );
-  
-  Domain domain( digitalBall.getDomain().lowerBound().inf( digitalBallBis.getDomain().lowerBound() ),
-                 digitalBall.getDomain().upperBound().sup( digitalBallBis.getDomain().upperBound() ));
+  Domain domain(Point::zero , Point::diagonal(40) );
   
   Z3i::KSpace kspace;
   kspace.init( domain.lowerBound(), domain.upperBound(), true );
   trace.info()<< domain <<std::endl;
-  trace.endBlock();
   
-  trace.beginBlock( "Make first digital surface..." );
-  typedef LightImplicitDigitalSurface< Z3i::KSpace, DigitalShape > LightDigitalSurface;
-  typedef DigitalSurface< LightDigitalSurface > DigitalSurface;
   typedef Z3i::KSpace::Surfel Surfel;
   
-  Surfel bel = Surfaces< Z3i::KSpace >::findABel( kspace, digitalBall, 500 );
-  SurfelAdjacency< Z3i::KSpace::dimension > surfelAdjacency( true );
-  LightDigitalSurface lightDigitalSurface( kspace, digitalBall, surfelAdjacency, bel );
-  DigitalSurface digitalSurface( lightDigitalSurface );
-
-  bel = Surfaces< Z3i::KSpace >::findABel( kspace, digitalBallBis, 500 );
-  LightDigitalSurface lightDigitalSurfaceBis( kspace, digitalBallBis, surfelAdjacency, bel );
-  DigitalSurface digitalSurfaceBis( lightDigitalSurfaceBis );
-
+  Viewer3D<Space,KSpace> viewer(kspace);
+  viewer.show();
   
-  trace.endBlock();
+  trace.beginBlock( "Make first digital surface..." );
 
-  std::set<Surfel> storage;
-  trace.beginBlock("Exporting the first ball");
+  std::set< std::pair<Surfel,RealPoint> > storage;
+
+  for(auto i=0; i<5;++i)
+    for(auto j=0; j<10;++j)
+    {
+      Surfel s  = kspace.sCell(Point(i*2+1,j*2+1,20));
+      RealPoint n(i,j,20);
+      storage.insert( std::make_pair(s ,n ));
+      viewer << s;
+    }
+  
+  for(auto i=5; i<10;++i)
+    for(auto j=0; j<10;++j)
+    {
+      Surfel s  = kspace.sCell(Point(i*2+1,j*2+1,20));
+      RealPoint n(i,j,20  );
+      storage.insert( std::make_pair(s ,n ));
+      viewer << s;
+    }
+  
+  for(auto j=0; j<10;++j)
+    for(auto k=5; k<10;++k)
+    {
+      Surfel s  = kspace.sCell(Point(10,j*2+1,k*2+1));
+      RealPoint n(1,0,0);
+      storage.insert( std::make_pair(s ,n ));
+      viewer << s;
+    }
+  
+  viewer << Viewer3D<>::updateDisplay;
+  
+  
   std::ofstream handle("output.csv");
-  for(auto cell : digitalSurface)
+  trace.beginBlock("Exporting");
+  for(auto pa : storage)
   {
-    const Point p = kspace.sKCoords(cell);
-    
-    if (p[0] < -7.5) continue;
-    
-    const KSpace::Sign sign = kspace.sSign(cell);
-    for (int dim=0; dim<3; dim++)
-      handle << p[dim] << " ";
-    handle << ( sign == KSpace::POS ) << " ";
-    for (int dim=0; dim<3; ++dim)
-      handle << (p-center)[dim]<<" ";
-    handle << std::endl;
-    //std::cout << "exporting "<< cell<<std::endl;
-    storage.insert( cell );
-  }
-  trace.endBlock();
-  
-  
-  trace.beginBlock("Exporting the second ball");
-  for(auto cell : digitalSurfaceBis)
-  {
-  
-    if (storage.find(cell) != storage.end())
-      continue;
+    Surfel cell = pa.first;
+    RealPoint normal = pa.second;
     
     const Point p = kspace.sKCoords(cell);
     const KSpace::Sign sign = kspace.sSign(cell);
-    // "2.0*" to map centerbis to Kspace
-    const RealPoint normal = (p-2.0*centerBis).getNormalized();
+    
+    //Normal
+    //const RealPoint normal ;
+ 
     for (int dim=0; dim<3; dim++)
       handle << p[dim] << " ";
     handle << ( sign == KSpace::POS ) << " ";
     for (int dim=0; dim<3; ++dim)
       handle << normal[dim] <<" ";
     handle << std::endl;
-    //std::cout << "exporting "<< cell<<std::endl;
   }
   trace.endBlock();
   
   
   handle.close();
   
-  return 0;
+  return app.exec();
+  trace.endBlock();
 }
