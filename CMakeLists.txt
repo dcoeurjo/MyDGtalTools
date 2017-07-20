@@ -72,7 +72,7 @@ volFillExterior
   testK
   dgtal-cpp11
   figChen
-  randomVoronoi)
+  randomVoronoi
   hsvwheel)
 
 
