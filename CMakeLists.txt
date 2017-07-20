@@ -71,7 +71,8 @@ volFillExterior
   testDECSurface
   testK
   dgtal-cpp11
-  figChen)
+  figChen
+  randomVoronoi)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
