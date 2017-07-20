@@ -57,7 +57,7 @@ SET(DGTAL_TOOLS_SRC
   drawChamfer
   doublelattice
   vol2vox
-  genMultiSurface  
+  genMultiSurface
 genMultiSurfaceT
 volFillExterior
   testRandomWalk
@@ -73,6 +73,7 @@ volFillExterior
   dgtal-cpp11
   figChen
   randomVoronoi)
+  hsvwheel)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
