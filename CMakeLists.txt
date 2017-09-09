@@ -73,7 +73,8 @@ volFillExterior
   dgtal-cpp11
   figChen
   randomVoronoi
-  hsvwheel)
+  hsvwheel
+vox2vol)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
