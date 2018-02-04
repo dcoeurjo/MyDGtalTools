@@ -74,7 +74,8 @@ volFillExterior
   figChen
   randomVoronoi
   hsvwheel
-vox2vol)
+vox2vol
+inpainting)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
