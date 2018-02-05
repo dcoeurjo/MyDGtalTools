@@ -26,17 +26,17 @@ Color getColor(const Point &p,
 {
   double minl2=1e23;
   Point minp;
+  Point localq, localp;
   for(auto &q : domimage)
   {
-    if (mask(q)== Color::White) continue;
+    if (mask(q).red()== 255) continue;
     double l2=0.0;
-    Point localq, localp;
     for(auto &local: dom)
     {
       localp = p + local;
       localq = q + local;
-      if (mask(localq)==Color::White) {l2=1e23; continue;}
-      if (mask(localp)==Color::Black)
+      if (mask(localq).red()==255) {l2=1e23; continue;}
+      if (mask(localp).red()==0)
         l2 += sqdist(image(localp), image(localq));
     }
     if (l2 < minl2)
@@ -100,8 +100,7 @@ int main(int argc, char **argv)
   }
 
   //Writting the image to another format
-  MagickWriter<Image>::exportMagick( "outImage.png", image );
-  MagickWriter<Image>::exportMagick( "outMask.png", mask );
-
+  std::string stim(argv[1]);
+  MagickWriter<Image>::exportMagick( "out-"+stim, image );
 }
 
