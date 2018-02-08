@@ -61,34 +61,34 @@ struct CompPoint
 
 int main(int argc, char **argv)
 {
-  
+
   typedef ImageContainerBySTLVector<Z2i::Domain, DGtal::Color> Image;
-  
+
   Image image = MagickReader<Image>::importImage(argv[1]);
   Image mask = MagickReader<Image>::importImage(argv[2]);
 
-  
+
   DigitalSet set(mask.domain());
   for(auto &p: mask.domain())
     if (mask(p) == Color::White)
       set.insertNew(p);
   typedef DistanceTransformation<Z2i::Space, DigitalSet, Z2i::L2Metric> DTL2;
   DTL2 dt(image.domain(),set, Z2i::l2Metric );
-  
-  
+
+
   std::vector<Point> queue(set.size());
   std::copy(set.begin(), set.end(), queue.begin());
   CompPoint<DTL2> comp(dt);
   std::sort(queue.begin(), queue.end(), comp);
   trace.info()<<"Set: "<<set.size()<<std::endl;
   trace.info()<<"Queue: "<<queue.size()<<std::endl;
-  
-  
-  const unsigned int size=11;
+
+
+  const unsigned int size=atoi(argv[3]);
   Domain dom(Point::diagonal(-(int)size/2), Point::diagonal(size/2));
   Domain domimage(image.domain().lowerBound() + Point::diagonal(size/2),
                   image.domain().upperBound() - Point::diagonal(size/2));
-  
+
   int cpt=0;
   for(auto &p : queue)
   {
@@ -103,4 +103,3 @@ int main(int argc, char **argv)
   std::string stim(argv[1]);
   MagickWriter<Image>::exportMagick( "out-"+stim, image );
 }
-
