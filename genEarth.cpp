@@ -54,36 +54,53 @@ double FBM5(RealPoint &x)
 }
 
 
-int main()
+int main(int argc, char **argv)
 {
-  const double radius = 100.0;
-  const double water = radius*1.4;
+  const double radius = atof(argv[1]);
+  const double water = radius*1.45;
   const double core = radius*1.2;
   Domain domain(Point(-2*radius,-2*radius,-radius*2), Point(radius*2,radius*2,radius*2));
   ImageContainerBySTLVector<Domain, unsigned char> image(domain);
+
+  RealPoint dir(rand(), rand(), rand());
+  dir = dir.getNormalized();
+  
+  std::vector<RealPoint> dirs;
+  for(auto i=0; i < 7; ++i)
+  {
+    RealPoint dir(rand() - RAND_MAX/2, rand()- RAND_MAX/2, rand()- RAND_MAX/2);
+    dirs.push_back(dir.getNormalized());
+    trace.info()<<dir<<std::endl;
+  }
   
   for(auto &p: domain)
   {
     RealPoint x = p;
-    RealPoint y = 4.0*x.getNormalized();
+    RealPoint y = 1.0*x.getNormalized();
     double mountain = pow(1.0 - FBM5(y), 3.0);
     //const double water = radius*0.85;
     y = x.getNormalized();
     
     double dist=(x - radius*y).norm() - 0.6*mountain*radius;
-    
-    // std::cout<< (x - radius*y).norm()<<" "<< mountain*radius<<" " <<mountain<<"  "<<dist<<std::endl;
-    if ((dist < 0.3*radius ) || (p.norm() < radius))
+    if ((dist < 0.3*radius ) || (p.norm() < radius))
       image.setValue(p,128);
     
     //water
     if ((p.norm() < water) && (image(p)==0))
       image.setValue(p,64);
     
-    //core
-    if ((p.norm() < core) && (image(p)==128))
-      image.setValue(p,32);
-    
+    //Volcanos + core
+     if (image(p)!=0)
+    {
+      for(auto i=0; i < 7; ++i)
+      {
+        double d =(y-dirs[i]).norm();
+        double dec = exp(-d*d * 3*core);
+        if( ((p.norm() - 0.4*core*dec ) < core))
+          image.setValue(p,32);
+      }
+    }
+
   }
   
   GenericWriter<ImageContainerBySTLVector<Domain, unsigned char> >::exportFile("earth.vol", image);
