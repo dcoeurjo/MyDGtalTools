@@ -51,6 +51,7 @@ SET(DGTAL_TOOLS_SRC
   areaMonteCarlo
   morpho
   BNG
+  genEarth
   testChamfer
  pts2balls
   unimodular
