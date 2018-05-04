@@ -66,7 +66,8 @@ int main(int argc, char **argv)
   dir = dir.getNormalized();
   
   std::vector<RealPoint> dirs;
-  for(auto i=0; i < 7; ++i)
+  dirs.push_back(RealPoint(1,0,0));
+  for(auto i=1; i < 7; ++i)
   {
     RealPoint dir(rand() - RAND_MAX/2, rand()- RAND_MAX/2, rand()- RAND_MAX/2);
     dirs.push_back(dir.getNormalized());
@@ -101,6 +102,8 @@ int main(int argc, char **argv)
       }
     }
 
+    if ((p[0]>=0)&&(p[1]>=0)&&(p[2]>=0))
+      image.setValue(p,0);
   }
   
   GenericWriter<ImageContainerBySTLVector<Domain, unsigned char> >::exportFile("earth.vol", image);
