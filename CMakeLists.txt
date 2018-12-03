@@ -77,7 +77,8 @@ volFillExterior
   hsvwheel
 vox2vol
 inpainting
-reaction)
+reaction
+reactionSurf)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
