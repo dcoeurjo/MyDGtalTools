@@ -78,7 +78,9 @@ volFillExterior
 vox2vol
 inpainting
 reaction
-reactionSurf)
+reactionSurf
+testErfinv
+displayPts)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})

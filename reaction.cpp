@@ -36,6 +36,8 @@ double lap(const Image &A, const Point &p)
   
   return A(plus(p,h,A.domain())) + A(plus(p,-h,A.domain())) + A(plus(p,-v,A.domain())) + A(plus(p,v,A.domain())) - 4.0*A(p);
  }
+// A(x-1,y) + A(x+1,y) + A(x,y-1) + A(x,y+1) - 4*A(x,y)
+
 
 template<typename Image>
 void oneStep(const Domain &innerDomain,
