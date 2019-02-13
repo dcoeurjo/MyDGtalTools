@@ -72,7 +72,9 @@ void exportMap(std::string &filename,
                           255-static_cast<unsigned char>(255*clamp(5*B(p))),
                           255-static_cast<unsigned char>(255*clamp(5*B(p)))));
   }
-  trace.info() << "hop"<<std::endl;
+  trace.info() <<  *std::min_element(B.begin(), B.end())
+               <<" x "
+               <<*std::max_element(B.begin(), B.end())<<std::endl;
   mix >> filename;
 }
 
@@ -86,7 +88,7 @@ int main()
   ImageContainerBySTLVector<Domain,Color> mix(A.domain());
 
   
-  ImageContainerBySTLVector<Domain,int> logo = GenericReader< ImageContainerBySTLVector<Domain,int>>::import("allego.png");
+ // ImageContainerBySTLVector<Domain,int> logo = GenericReader< ImageContainerBySTLVector<Domain,int>>::import("allego.png");
   
   
   for(auto &v: A)
@@ -94,12 +96,12 @@ int main()
   for(auto &v: B)
     v=0.0;
   
-  for(auto &p: B.domain())
-    if (logo(p) < 254) B.setValue(p, 1.0);
+//  for(auto &p: B.domain())
+//    if (logo(p) < 254) B.setValue(p, 1.0);
   
-//  for(auto w = 0; w <10 ; ++w)
-//    for(auto ww = 0; ww <10 ; ++ww)
-//      B.setValue(Point(250+w,250+ww), 1.0);
+  for(auto w = 0; w <10 ; ++w)
+    for(auto ww = 0; ww <10 ; ++ww)
+      B.setValue(Point(250+w,250+ww), 1.0);
 
   int cpt=0;
   for(auto k=0; k < 50000; k++)
