@@ -53,7 +53,27 @@ int main(int argc, char **argv)
     board.drawArrow(x, y, x+nx, y+ny);
     trace.info()<< x<<" "<<y<<" "<<nx<<" "<<ny<<std::endl;
   }
+  ifs.close();
   
+  
+  ifs.open (argv[3], std::ifstream::in);
+  board.setFillColorRGBi(0,0,220);
+  board.setPenColorRGBi(0,0,200);
+  while (ifs.good())
+  {
+    ifs >> x;
+    if (!ifs.good()) continue;
+    ifs >> y;
+    ifs >> nx;
+    ifs >> ny;
+    x*=100;
+    y*=100;
+    nx*=10;
+    ny*=10;
+    board.fillCircle(x, y, 1);
+    board.drawArrow(x, y, x+nx, y+ny);
+    trace.info()<< x<<" "<<y<<" "<<nx<<" "<<ny<<std::endl;
+  }
   board.saveCairo("pts.png",Board2D::CairoPNG);
  
   return 0;
