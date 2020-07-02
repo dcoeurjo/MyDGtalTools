@@ -40,7 +40,7 @@ int main(int argc, char ** argv)
       if (y!= 0.0)
       {std::cout<<"ERROR"<<std::endl; exit(42);}
      
-      vertices.push_back({x,z});
+      vertices.push_back({100*x,100*z});
     }
     else if(line.substr(0,2)=="f ")
     {
@@ -50,18 +50,34 @@ int main(int argc, char ** argv)
     
       std::pair<int,int> ea(a,b), eb(b,c), ec(a,c);
       
-    //  if (edges.find(std::pair<int,int>(b,a)) != edges.end())
+      if (edges.find(std::pair<int,int>(b,a)) == edges.end())
         edges.insert(ea);
-    //  if (edges.find(std::pair<int,int>(c,b)) != edges.end())
+      if (edges.find(std::pair<int,int>(c,b)) == edges.end())
         edges.insert(eb);
-    //  if (edges.find(std::pair<int,int>(c,a)) != edges.end())
+      if (edges.find(std::pair<int,int>(c,a)) == edges.end())
         edges.insert(ec);
               
     }
   }
   
+  double minx=vertices[0][0],miny=vertices[0][1];
+  for(auto &v: vertices)
+   {
+     minx=std::min(minx, v[0]);
+     miny=std::min(miny, v[1]);
+   }
+  
+  //noise
+  for(auto &v: vertices)
+  {
+    double d =std::max (0.0, 200.0-(0.3*(v[0]-minx)*(v[0]-minx)+(v[1]-miny)*(v[1]-miny)));
+    v[0] += 0.01*d*distribution(generator);
+    v[1] += 0.01*d*distribution(generator);
+  }
+  
+  
   for(auto edge: edges)
-      board.drawLine(vertices[edge.first][0], vertices[edge.first][1], vertices[edge.second][0], vertices[edge.second][1]);
+    board.drawLine(vertices[edge.first][0], vertices[edge.first][1], vertices[edge.second][0], vertices[edge.second][1]);
   
   std::cout<<edges.size()<<" Edges."<<std::endl;
   
