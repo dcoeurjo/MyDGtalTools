@@ -16,12 +16,11 @@ int main()
   Domain dom(a,b);
   
   Board2D board;
-  board  << SetMode( dom.className(), "Paving" )
-          << dom;
+  board  << dom;
   
-  board << SetMode(a.className(), "Both");
+ // board << SetMode(a.className(), "Both");
 
-  
+  /*
   NaiveDSS8<Integer> segment(Point(1,1), Point(15,1));
   board << SetMode(segment.className(), "");
   board << segment;
@@ -35,7 +34,7 @@ int main()
   
   NaiveDSS8<Integer> segment4(Point(1,7), Point(15,15));
   board << segment4;
-  
+  */
 
   board.saveCairo("grid.pdf", Board2D::CairoPDF);
 

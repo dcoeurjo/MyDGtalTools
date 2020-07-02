@@ -6,6 +6,8 @@ PROJECT(MyDGtalTools)
 
 cmake_minimum_required (VERSION 2.6)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 FIND_PACKAGE(DGtal 0.7 REQUIRED)
 INCLUDE_DIRECTORIES(${DGTAL_INCLUDE_DIRS})
@@ -80,7 +82,9 @@ inpainting
 reaction
 reactionSurf
 testErfinv
-displayPts)
+displayPts
+gridAxiDraw
+remesherAxi)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
