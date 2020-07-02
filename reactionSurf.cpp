@@ -19,8 +19,8 @@ using namespace DGtal;
 using namespace Z3i;
 
 const double f = 0.037;
-const double k = 0.6;
-const double dt = .0001  ;
+const double k = 0.06;
+const double dt = .4  ;
 const double ra = 1.0;
 const double rb = 0.5;
 
@@ -29,7 +29,6 @@ void onestep( Form &A,  Form &B, const Lap &laplacian)
 {
   auto lapA = laplacian * A;
   auto lapB = laplacian * B;
-
   for(auto i = 0 ; i < A.myContainer.size(); ++i)
   {
     double ap = ra * lapA.myContainer(i) - A.myContainer(i)*B.myContainer(i)*B.myContainer(i)  + f*(1.0-A.myContainer(i));
@@ -64,36 +63,39 @@ int main(int argc, char** argv)
   typedef DiscreteExteriorCalculusFactory<EigenLinearAlgebraBackend> CalculusFactory;
   const Calculus calculus = CalculusFactory::createFromNSCells<2>(surface->begin(), surface->end());
   
-  Calculus::DualForm0 u(calculus);
-  Calculus::DualForm0 v(calculus);
+  Calculus::DualForm0 A(calculus);
+  Calculus::DualForm0 B(calculus);
 
-  const double h= 0.1;
-  const double t = 0.5 * pow(h, 2. / 3.);
-  const double Kt=  4.;
-  const Calculus::DualIdentity0 laplace = calculus.heatLaplace<DUAL>(h, t, Kt);
-  
+//  const double h= 0.1;
+//  const double t = 0.5 * pow(h, 2. / 3.);
+//  const double Kt=  4.;
+//  const Calculus::DualIdentity0 laplace = calculus.heatLaplace<DUAL>(h, t, Kt);
+  const Calculus::DualIdentity0 laplace = -calculus.laplace<DUAL>();
+
   trace.info()<< laplace<<std::endl;
-  for(auto i = 0 ; i < u.myContainer.size(); ++i)
+  for(auto i = 0 ; i < A.myContainer.size(); ++i)
   {
-    u.myContainer( i ) = 1.0;
-    v.myContainer( i ) = 0.0;
+    A.myContainer( i ) = 1.0;
+    B.myContainer( i ) = 0.0;
   }
-  v.myContainer( 0 ) = 1.0;
-  v.myContainer( 1 ) = 1.0;
-  v.myContainer( 2 ) = 1.0;
-  v.myContainer( 3 ) = 1.0;
+  B.myContainer( 0 ) = 1.0;
+  B.myContainer( 1 ) = 1.0;
+  B.myContainer( 2 ) = 1.0;
   //v = laplace*u
 
-  for(auto k = 0 ; k < 1000 ; ++k)
+  trace.info()<< laplace.myContainer.coeff(10,10)<<std::endl;
+  
+  const auto MaxIter = 10;
+  for(auto k = 0 ; k < MaxIter ; ++k)
   {
-    trace.progressBar(k, 1);
-    onestep(u,v,laplace);
+    trace.progressBar(k, MaxIter);
+    onestep(A,B,laplace);
   }
   
-  trace.info() << v.myContainer.minCoeff()<<" x "<< v.myContainer.maxCoeff() <<std::endl;
+  trace.info() << B.myContainer.minCoeff()<<" x "<< B.myContainer.maxCoeff() <<std::endl;
   Viewer3D<Space,KSpace> viewer(K);
   viewer.show();
-  Display3DFactory<Space, KSpace>::draw(viewer, u);
+  Display3DFactory<Space, KSpace>::draw(viewer, B);
   viewer << Viewer3D<>::updateDisplay;
   application.exec();
   
