@@ -84,7 +84,8 @@ reactionSurf
 testErfinv
 displayPts
 gridAxiDraw
-remesherAxi)
+remesherAxi
+colorAxi)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
