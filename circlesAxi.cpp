@@ -12,8 +12,8 @@ int main()
   Board2D board;
   board.setUnit ( LibBoard::Board::UCentimeter );
 
-  auto nbCircles=50;
-  auto dec = 0.5;
+  auto nbCircles=30;
+  auto dec = 0.8;
   auto rad = 1.0;
   
   board.setPenColorRGBf(1.0, 0, 0);
