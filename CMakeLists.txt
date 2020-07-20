@@ -85,7 +85,8 @@ testErfinv
 displayPts
 gridAxiDraw
 remesherAxi
-colorAxi)
+colorAxi
+circlesAxi)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
