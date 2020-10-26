@@ -86,7 +86,9 @@ displayPts
 gridAxiDraw
 remesherAxi
 colorAxi
-circlesAxi)
+circlesAxi
+colorAxi2
+tictac)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
