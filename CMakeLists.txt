@@ -89,7 +89,8 @@ colorAxi
 circlesAxi
 colorAxi2
 tictac
-test3dTo2d)
+test3dTo2d
+xmas)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})

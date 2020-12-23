@@ -5,7 +5,7 @@
 
 using namespace DGtal;
 using namespace Z3i;
-typedef Shortcuts<Z3i::KSpace>  SH3;
+typedef Shortcuts<Z3i::KSpace>         SH3;
 
 int main()
 {
