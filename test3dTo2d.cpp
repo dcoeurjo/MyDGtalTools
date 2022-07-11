@@ -23,7 +23,7 @@ int main()
   {
     auto i = real % grid;
     auto j = real / grid;
-    Point dec(Point(2*i*((5*SIZE)/2),0,-2*j*((5*SIZE)/2)));
+    Point dec(2*i*((5*SIZE)/2),0,-2*j*((5*SIZE)/2));
     Domain dom(Point(0,0,0),Point(SIZE,SIZE,SIZE));
     DigitalSet set(dom);
     uint cpt=0;

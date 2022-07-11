@@ -90,6 +90,7 @@ circlesAxi
 colorAxi2
 tictac
 test3dTo2d
+voxelnoise
 xmas)
 
 
