@@ -91,7 +91,8 @@ colorAxi2
 tictac
 test3dTo2d
 voxelnoise
-xmas)
+xmas
+durand-kerner-root)
 
 
 FOREACH(FILE ${DGTAL_TOOLS_SRC})
