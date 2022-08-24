@@ -13,6 +13,12 @@ auto simpleP=[](const Complex &x) {
   return (x- Complex(1,0)) * (x- Complex(-1,0));
 };
 
+auto multiP=[](const Complex &x) {
+  return x*x;
+};
+
+
+
 template <typename P>
 std::vector<Complex> iterateDurandKerner(const P &poly, const std::vector<Complex> &Z, double lambda)
 {
@@ -32,13 +38,13 @@ std::vector<Complex> iterateDurandKerner(const P &poly, const std::vector<Comple
 int main()
 {
   Board2D board;
-  const auto nbRoots=100  ;
+  const auto nbRoots=42  ;
   std::vector<Complex>  Z(nbRoots);
   std::vector<Complex>  Zp(nbRoots);
 
   std::vector<Complex> roots(nbRoots);
   for (auto &r : roots)
-    r = Complex( 1-2.0*(rand() /(double) RAND_MAX),  1-2.0*(rand() /(double) RAND_MAX));
+    r = Complex(0,0); //Complex( 1-2.0*(rand() /(double) RAND_MAX),  1-2.0*(rand() /(double) RAND_MAX));
   
   auto randP=[&](const Complex &x) {
     Complex p(1,0);
@@ -51,7 +57,7 @@ int main()
   {
     Z[i] = 2.0*Complex( cos(i*2.0*M_PI/(double)nbRoots), sin(i*2.0*M_PI/(double)nbRoots)); //circle
  //   Z[i] = Complex( (i+1)/(double)nbRoots, 2.0); //line
-    //Z[i] = Complex( 1-2.0*(rand() /(double) RAND_MAX),  1-2.0*(rand() /(double) RAND_MAX));
+  //  Z[i] = Complex( 1-2.0*(rand() /(double) RAND_MAX),  1-2.0*(rand() /(double) RAND_MAX));
   }
   
   board.setPenColor(Color::Gray);
@@ -71,7 +77,7 @@ int main()
   {
     for(auto i=0; i < nbRoots; ++i)
       curves[i].push_back(LibBoard::Point(Z[i].real(), Z[i].imag()));
-    Zp = iterateDurandKerner(randP, Z, 0.05);
+    Zp = iterateDurandKerner(randP, Z, .05);
     std::swap(Zp,Z);
   }
 
